@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cara Menulis Hiragana & Katakana</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#2d2d2d;min-height:100vh}
+
+header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);color:white;padding:20px;text-align:center}
+header h1{font-size:1.5rem;letter-spacing:1px}
+header p{font-size:0.82rem;opacity:.8;margin-top:4px}
+.badge-row{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:3px 12px;font-size:.75rem}
+
+.tabs{display:flex;background:white;border-bottom:2px solid #dde3ea;overflow-x:auto}
+.tab{padding:11px 16px;font-size:.82rem;font-weight:600;color:#777;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab.active{color:#0f3460;border-color:#0f3460}
+.tab:hover:not(.active){color:#0f3460;background:#f0f4f8}
+
+.content{padding:16px 14px;max-width:960px;margin:0 auto}
+.hidden{display:none}
+
+/* LAYOUT */
+.main-layout{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:start}
+@media(max-width:600px){.main-layout{grid-template-columns:1fr}}
+
+/* CHARACTER GRID */
+.char-panel{background:white;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.char-panel h3{font-size:.82rem;font-weight:700;color:#0f3460;margin-bottom:10px}
+.row-label{font-size:.65rem;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin:8px 0 4px;padding-left:2px}
+.char-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.char-cell{
+  background:#f5f8ff;border:1.5px solid #e0e8f0;border-radius:6px;
+  padding:6px 2px;text-align:center;cursor:pointer;transition:all .15s;
+}
+.char-cell:hover{background:#e0eaf8;border-color:#0f3460}
+.char-cell.active{background:#0f3460;border-color:#0f3460}
+.char-cell.active .cc{color:white}
+.char-cell.active .cr{color:rgba(255,255,255,.7)}
+.cc{font-size:1.2rem;display:block;line-height:1.2}
+.cr{font-size:.58rem;color:#888;display:block;margin-top:1px}
+
+/* VIEWER */
+.viewer-panel{background:white;border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.viewer-top{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.viewer-char-big{font-size:3.5rem;line-height:1;color:#1a1a2e;min-width:60px;text-align:center}
+.viewer-info{flex:1}
+.viewer-romaji{font-size:1.2rem;font-weight:700;color:#0f3460}
+.viewer-strokes{font-size:.82rem;color:#888;margin-top:2px}
+.viewer-tip{font-size:.78rem;color:#555;margin-top:4px;line-height:1.5;max-width:300px}
+
+.svg-area{position:relative;border:2px solid #e0e8f0;border-radius:10px;overflow:hidden;background:#fafcff;margin-bottom:14px}
+.svg-area svg{display:block;width:100%;max-width:300px;margin:0 auto}
+
+/* grid guides inside SVG */
+.guide-line{stroke:#e8eef5;stroke-width:0.5}
+
+.stroke-path{fill:none;stroke:#1a1a2e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.stroke-path.shown{opacity:1}
+.stroke-path.drawing{opacity:1}
+.stroke-num{font-size:8px;fill:#e74c3c;font-weight:bold;font-family:sans-serif}
+.stroke-dot{fill:#e74c3c}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:.78rem;font-weight:600;transition:all .15s}
+.btn-primary{background:#0f3460;color:white}
+.btn-primary:hover{background:#0a2444}
+.btn-secondary{background:#f0f4f8;color:#555;border:1.5px solid #dde3ea}
+.btn-secondary:hover{background:#e0e8f0}
+.btn-danger{background:#fdecea;color:#c62828;border:1.5px solid #ffcdd2}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.speed-row{display:flex;align-items:center;gap:6px;font-size:.75rem;color:#888;margin-left:auto}
+.speed-row input{width:80px}
+.stroke-counter{font-size:.78rem;color:#888;background:#f5f8ff;padding:4px 10px;border-radius:20px}
+
+/* PRACTICE CANVAS */
+.practice-section{margin-top:16px;border-top:1px dashed #e0e8f0;padding-top:14px}
+.practice-section h4{font-size:.85rem;font-weight:700;color:#0f3460;margin-bottom:8px}
+.canvas-wrap{position:relative;border:2px dashed #cdd8e8;border-radius:10px;overflow:hidden;background:white;display:inline-block}
+canvas{display:block;cursor:crosshair}
+.canvas-guide{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:.08}
+.practice-btns{display:flex;gap:8px;margin-top:8px}
+
+/* STROKE LIST */
+.stroke-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.stroke-thumb{
+  width:50px;height:50px;border:1.5px solid #e0e8f0;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:#fafcff;transition:all .15s;position:relative;overflow:hidden;
+}
+.stroke-thumb:hover,.stroke-thumb.active{border-color:#0f3460;background:#f0f4f8}
+.stroke-thumb svg{width:44px;height:44px}
+.stroke-n{position:absolute;top:1px;left:3px;font-size:.55rem;color:#e74c3c;font-weight:700}
+
+/* ORDER TIPS */
+.order-rules{background:#f0f4f8;border-radius:10px;padding:12px;margin-top:10px}
+.order-rules h4{font-size:.82rem;font-weight:700;color:#0f3460;margin-bottom:8px}
+.rule-item{display:flex;gap:8px;font-size:.78rem;color:#555;padding:3px 0;line-height:1.5}
+.rule-item::before{content:'→';color:#0f3460;flex-shrink:0}
+
+/* PRINT */
+.print-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:10px;margin-bottom:14px}
+.print-char{text-align:center}
+.print-char .pc{font-size:1.8rem;display:block}
+.print-char .pr{font-size:.65rem;color:#888}
+.genko-row{display:flex;gap:4px;margin-bottom:4px;flex-wrap:wrap}
+.genko-box{width:56px;height:56px;border:1.5px solid #aaa;position:relative;flex-shrink:0}
+.genko-box::before,.genko-box::after{content:'';position:absolute;background:#ddd}
+.genko-box::before{width:100%;height:1px;top:50%;left:0}
+.genko-box::after{width:1px;height:100%;left:50%;top:0}
+.genko-ref{font-size:1.8rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#e8eef5;line-height:1}
+.print-btn{background:#0f3460;color:white;border:none;padding:9px 20px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;margin-bottom:14px}
+
+/* loading */
+.loading{text-align:center;padding:40px;color:#aaa;font-size:.85rem}
+.error{text-align:center;padding:20px;color:#c62828;font-size:.82rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✍️ Cara Menulis Hiragana & Katakana</h1>
+  <p>Stroke order interaktif dari KanjiVG · Animasi · Practice Canvas · Print Grid</p>
+  <div class="badge-row">
+    <span class="badge">46 Hiragana</span>
+    <span class="badge">46 Katakana</span>
+    <span class="badge">Urutan coretan akurat</span>
+    <span class="badge">Canvas latihan</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchScript('hira',this)">あ Hiragana</div>
+  <div class="tab" onclick="switchScript('kata',this)">ア Katakana</div>
+  <div class="tab" onclick="showTab('print')">🖨️ Print Grid</div>
+  <div class="tab" onclick="showTab('rules')">📋 Aturan Umum</div>
+</div>
+
+<!-- HIRAGANA TAB -->
+<div id="tab-hira" class="content">
+  <div class="main-layout">
+    <div class="char-panel">
+      <h3>Pilih Karakter</h3>
+      <div id="hira-char-grid"></div>
+    </div>
+    <div class="viewer-panel" id="hira-viewer">
+      <div style="text-align:center;padding:40px 20px;color:#aaa;font-size:.9rem">
+        ← Pilih karakter di sebelah kiri untuk melihat cara menulisnya
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KATAKANA TAB -->
+<div id="tab-kata" class="content hidden">
+  <div class="main-layout">
+    <div class="char-panel">
+      <h3>Pilih Karakter</h3>
+      <div id="kata-char-grid"></div>
+    </div>
+    <div class="viewer-panel" id="kata-viewer">
+      <div style="text-align:center;padding:40px 20px;color:#aaa;font-size:.9rem">
+        ← Pilih karakter di sebelah kiri untuk melihat cara menulisnya
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT TAB -->
+<div id="tab-print" class="content hidden">
+  <button class="print-btn" onclick="window.print()">🖨️ Print Halaman Ini</button>
+  <h3 style="font-size:.9rem;margin-bottom:12px;color:#0f3460">Hiragana — Practice Sheet</h3>
+  <div id="print-hira"></div>
+  <h3 style="font-size:.9rem;margin:16px 0 12px;color:#0f3460">Katakana — Practice Sheet</h3>
+  <div id="print-kata"></div>
+</div>
+
+<!-- RULES TAB -->
+<div id="tab-rules" class="content hidden">
+  <div style="background:white;border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+    <h3 style="font-size:1rem;color:#0f3460;margin-bottom:14px">📋 Aturan Urutan Coretan (Stroke Order)</h3>
+    <div class="order-rules" style="background:white;border:none;padding:0">
+      <div style="display:grid;gap:12px">
+        <div style="background:#f0f4f8;border-radius:10px;padding:14px">
+          <div style="font-weight:700;color:#0f3460;font-size:.9rem;margin-bottom:8px">① Atas ke Bawah (上から下へ)</div>
+          <div style="font-size:.82rem;color:#555;line-height:1.6">Selalu mulai dari bagian atas karakter, turun ke bawah. Contoh: き (ki) — garis horizontal paling atas ditulis pertama.</div>
+          <div style="font-size:1.8rem;text-align:center;margin-top:8px;letter-spacing:12px;color:#0f3460">き に ほ</div>
+        </div>
+        <div style="background:#f0f4f8;border-radius:10px;padding:14px">
+          <div style="font-weight:700;color:#0f3460;font-size:.9rem;margin-bottom:8px">② Kiri ke Kanan (左から右へ)</div>
+          <div style="font-size:.82rem;color:#555;line-height:1.6">Ketika ada beberapa elemen sejajar horizontal, mulai dari yang paling kiri. Contoh: さ (sa) — garis atas paling kiri dulu.</div>
+          <div style="font-size:1.8rem;text-align:center;margin-top:8px;letter-spacing:12px;color:#0f3460">さ は ま</div>
+        </div>
+        <div style="background:#f0f4f8;border-radius:10px;padding:14px">
+          <div style="font-weight:700;color:#0f3460;font-size:.9rem;margin-bottom:8px">③ Horizontal sebelum Vertikal</div>
+          <div style="font-size:.82rem;color:#555;line-height:1.6">Jika ada garis horizontal dan vertikal bersilang, biasanya horizontal ditulis lebih dulu. Tapi ada pengecualian — selalu cek animasi!</div>
+          <div style="font-size:1.8rem;text-align:center;margin-top:8px;letter-spacing:12px;color:#0f3460">た て と</div>
+        </div>
+        <div style="background:#f0f4f8;border-radius:10px;padding:14px">
+          <div style="font-weight:700;color:#0f3460;font-size:.9rem;margin-bottom:8px">④ Karakter yang Sering Keliru</div>
+          <div style="font-size:.82rem;color:#555;line-height:1.6">
+            <b>ぬ vs め</b> — ぬ ada ekor/simpul, め tidak. <br>
+            <b>ソ vs ン</b> (katakana) — ソ miring kanan (so), ン miring kiri (n). <br>
+            <b>シ vs ツ</b> (katakana) — ShI condong, TSU lebih tegak. <br>
+            <b>る vs ろ</b> — る ada lingkaran/simpul di ujung, ろ lurus.
+          </div>
+        </div>
+        <div style="background:#fff8e6;border-radius:10px;padding:14px;border:1.5px solid #ffe082">
+          <div style="font-weight:700;color:#e67e00;font-size:.9rem;margin-bottom:8px">⚡ Tips Nulis yang Cepat Bagus</div>
+          <ul style="list-style:none;font-size:.82rem;color:#555;line-height:1.8">
+            <li>→ Tulis di kertas berpetak (genkouyoushi) — 1 karakter per kotak</li>
+            <li>→ Tulis lambat dulu, pastikan proporsi benar, baru percepat</li>
+            <li>→ Latihan setiap hari minimal 5 menit — konsistensi > durasi</li>
+            <li>→ Tiru persis animasi — arah dan urutan stroke itu penting!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const hiragana = [
+  {k:'あ',r:'a',code:'03042',tip:'3 coretan. Garis horizontal dulu, lalu vertikal melengkung, lalu lengkung besar melingkar.'},
+  {k:'い',r:'i',code:'03044',tip:'2 coretan. Kiri dulu (melengkung), lalu kanan (melengkung ke bawah).'},
+  {k:'う',r:'u',code:'03046',tip:'2 coretan. Titik kecil di atas, lalu badan melengkung.'},
+  {k:'え',r:'e',code:'03048',tip:'4 coretan. Garis atas, titik, lengkung kiri, lalu ekor kanan.'},
+  {k:'お',r:'o',code:'0304a',tip:'3 coretan. Garis horizontal, vertikal, lalu lengkung melingkar besar.'},
+  {k:'か',r:'ka',code:'0304b',tip:'3 coretan. Dua garis silang, lalu lengkung kanan.'},
+  {k:'き',r:'ki',code:'0304d',tip:'4 coretan. Tiga garis horizontal (atas ke bawah), lalu vertikal.'},
+  {k:'く',r:'ku',code:'0304f',tip:'1 coretan saja! Sudut lancip ke kanan.'},
+  {k:'け',r:'ke',code:'03051',tip:'3 coretan. Vertikal kiri, lalu dua garis kanan.'},
+  {k:'こ',r:'ko',code:'03053',tip:'2 coretan. Garis atas melengkung, lalu garis bawah.'},
+  {k:'さ',r:'sa',code:'03055',tip:'3 coretan. Garis horizontal dua, lalu coretan melengkung kanan bawah.'},
+  {k:'し',r:'shi',code:'03057',tip:'1 coretan. Turun lurus lalu melengkung ke kanan. Ingat: bunyi "shi" bukan "si"!'},
+  {k:'す',r:'su',code:'03059',tip:'2 coretan. Seperti angka 9 — garis pendek atas, lalu badan melingkar.'},
+  {k:'せ',r:'se',code:'0305b',tip:'3 coretan. Garis horizontal atas, vertikal, lalu garis melengkung bawah.'},
+  {k:'そ',r:'so',code:'0305d',tip:'2 coretan. Seperti S — garis atas, lalu lengkung besar.'},
+  {k:'た',r:'ta',code:'0305f',tip:'4 coretan. Seperti "te" (て) dengan tambahan dua garis kiri atas.'},
+  {k:'ち',r:'chi',code:'03061',tip:'2 coretan. Lengkung atas pendek, lalu spiral besar. Ingat: bunyi "chi" bukan "ti"!'},
+  {k:'つ',r:'tsu',code:'03064',tip:'1 coretan. Melengkung dari kiri atas ke kanan bawah. Bunyi "tsu" bukan "tu"!'},
+  {k:'て',r:'te',code:'03066',tip:'1 coretan. Tiga garis horizontal jadi satu sapuan.'},
+  {k:'と',r:'to',code:'03068',tip:'2 coretan. Garis vertikal, lalu lengkung ke kanan.'},
+  {k:'な',r:'na',code:'0306a',tip:'4 coretan. Mirip に (ni) tapi ada lingkaran di kanan bawah.'},
+  {k:'に',r:'ni',code:'0306b',tip:'3 coretan. Dua garis horizontal, lalu vertikal dengan kait.'},
+  {k:'ぬ',r:'nu',code:'0306c',tip:'2 coretan. Ingat: ぬ ada simpul/ekor di bawah, beda dari め (me)!'},
+  {k:'ね',r:'ne',code:'0306d',tip:'2 coretan. Garis kiri, lalu spiral dengan kait.'},
+  {k:'の',r:'no',code:'0306e',tip:'1 coretan. Lingkaran spiral dari kiri atas.'},
+  {k:'は',r:'ha',code:'0306f',tip:'3 coretan. Vertikal kiri, garis atas, lalu lengkung kanan bawah.'},
+  {k:'ひ',r:'hi',code:'03072',tip:'2 coretan. Dua lengkung — kiri pendek, kanan besar.'},
+  {k:'ふ',r:'fu',code:'03075',tip:'4 coretan. Ingat gunung Fuji dengan 4 kaki! Bunyi "fu" bukan "hu".'},
+  {k:'へ',r:'he',code:'03078',tip:'1 coretan. Segitiga/sudut sederhana. Sama persis bentuknya dengan ヘ katakana!'},
+  {k:'ほ',r:'ho',code:'0307b',tip:'4 coretan. Seperti は (ha) + lingkaran tambahan di kanan.'},
+  {k:'ま',r:'ma',code:'0307e',tip:'3 coretan. Dua garis horizontal, lalu ekor melengkung ke bawah.'},
+  {k:'み',r:'mi',code:'0307f',tip:'2 coretan. Coretan kiri pendek, lalu spiral spiral besar ke kanan.'},
+  {k:'む',r:'mu',code:'03080',tip:'3 coretan. Cukup kompleks — perhatikan spiral dan ujung ke atas.'},
+  {k:'め',r:'me',code:'03081',tip:'2 coretan. Ingat: め tidak ada ekor/simpul, berbeda dari ぬ (nu)!'},
+  {k:'も',r:'mo',code:'03082',tip:'3 coretan. Dua garis horizontal, lalu vertikal menembus keduanya.'},
+  {k:'や',r:'ya',code:'03084',tip:'3 coretan. Seperti bentuk Y yang dimodifikasi.'},
+  {k:'ゆ',r:'yu',code:'03086',tip:'3 coretan. Bentuk seperti fish/ikan.'},
+  {k:'よ',r:'yo',code:'03088',tip:'2 coretan. Garis atas horizontal, lalu spiral ke bawah.'},
+  {k:'ら',r:'ra',code:'03089',tip:'2 coretan. Garis pendek atas, lalu lengkung ke bawah membentuk kait.'},
+  {k:'り',r:'ri',code:'0308a',tip:'2 coretan. Dua garis vertikal — kiri lebih pendek dan melengkung.'},
+  {k:'る',r:'ru',code:'0308b',tip:'2 coretan. Ingat: る ada simpul/lingkaran di ujung, ろ (ro) tidak!'},
+  {k:'れ',r:'re',code:'0308c',tip:'2 coretan. Garis kiri, lalu lengkung kanan dengan simpul.'},
+  {k:'ろ',r:'ro',code:'0308d',tip:'1 coretan. Mirip る tapi tanpa simpul/lingkaran di ujung.'},
+  {k:'わ',r:'wa',code:'0308f',tip:'2 coretan. Vertikal kiri, lalu lengkung kanan mirip れ tapi lebih sederhana.'},
+  {k:'を',r:'wo',code:'03092',tip:'3 coretan. Hanya dipakai sebagai partikel. Sering ditulis jarang.'},
+  {k:'ん',r:'n',code:'03093',tip:'1 coretan. Coretan unik — seperti kait terbalik. Bisa berdiri sendiri sebagai suku kata.'},
+];
+
+const katakana = [
+  {k:'ア',r:'a',code:'030a2',tip:'2 coretan. Garis diagonal kiri, lalu garis mendatar menembus.'},
+  {k:'イ',r:'i',code:'030a4',tip:'2 coretan. Diagonal kiri turun, lalu garis tegak.'},
+  {k:'ウ',r:'u',code:'030a6',tip:'3 coretan. Garis horizontal atas, lalu dua garis diagonal.'},
+  {k:'エ',r:'e',code:'030a8',tip:'3 coretan. Garis atas, tengah, bawah — seperti huruf I dengan serifs.'},
+  {k:'オ',r:'o',code:'030aa',tip:'3 coretan. Mirip エ tapi ada diagonal.'},
+  {k:'カ',r:'ka',code:'030ab',tip:'2 coretan. Diagonal kanan atas, lalu diagonal kiri bawah.'},
+  {k:'キ',r:'ki',code:'030ad',tip:'3 coretan. Dua garis horizontal, lalu vertikal menembus.'},
+  {k:'ク',r:'ku',code:'030af',tip:'2 coretan. Diagonal atas, lalu lengkung bawah.'},
+  {k:'ケ',r:'ke',code:'030b1',tip:'3 coretan. Seperti K — vertikal kiri, lalu dua diagonal.'},
+  {k:'コ',r:'ko',code:'030b3',tip:'2 coretan. Garis atas + kanan, lalu garis bawah.'},
+  {k:'サ',r:'sa',code:'030b5',tip:'3 coretan. Dua garis horizontal pendek, lalu vertikal.'},
+  {k:'シ',r:'shi',code:'030b7',tip:'3 coretan. INGAT: ShI = dua titik condong + satu garis lebih tegak. Beda dari ツ!'},
+  {k:'ス',r:'su',code:'030b9',tip:'2 coretan. Garis diagonal turun, lalu lengkung spiral.'},
+  {k:'セ',r:'se',code:'030bb',tip:'2 coretan. Garis vertical, lalu garis horizontal menembus + kait.'},
+  {k:'ソ',r:'so',code:'030bd',tip:'2 coretan. INGAT: ソ (so) miring kanan. Beda dari ン (n) yang miring kiri!'},
+  {k:'タ',r:'ta',code:'030bf',tip:'3 coretan. Dua garis diagonal atas, lalu garis melengkung bawah.'},
+  {k:'チ',r:'chi',code:'030c1',tip:'3 coretan. Dua garis horizontal, lalu diagonal ke kiri bawah.'},
+  {k:'ツ',r:'tsu',code:'030c4',tip:'3 coretan. INGAT: TSU = tiga garis lebih tegak. Beda dari シ (shi) yang condong!'},
+  {k:'テ',r:'te',code:'030c6',tip:'3 coretan. Garis atas, tengah, lalu diagonal.'},
+  {k:'ト',r:'to',code:'030c8',tip:'2 coretan. Garis vertikal, lalu garis horizontal pendek ke kanan.'},
+  {k:'ナ',r:'na',code:'030ca',tip:'2 coretan. Garis horizontal, lalu vertikal menembus.'},
+  {k:'ニ',r:'ni',code:'030cb',tip:'2 coretan. Dua garis horizontal — atas lebih pendek, bawah lebih panjang.'},
+  {k:'ヌ',r:'nu',code:'030cc',tip:'2 coretan. Diagonal atas, lalu coretan spiral.'},
+  {k:'ネ',r:'ne',code:'030cd',tip:'4 coretan. Kompleks — seperti kombinasi beberapa elemen.'},
+  {k:'ノ',r:'no',code:'030ce',tip:'1 coretan. Satu diagonal dari kiri atas ke kanan bawah. Simpel!'},
+  {k:'ハ',r:'ha',code:'030cf',tip:'2 coretan. Dua diagonal keluar seperti kipas.'},
+  {k:'ヒ',r:'hi',code:'030d2',tip:'3 coretan. Seperti huruf F terbalik — vertikal, lalu dua horizontal.'},
+  {k:'フ',r:'fu',code:'030d5',tip:'2 coretan. Garis horizontal atas, lalu diagonal melengkung.'},
+  {k:'ヘ',r:'he',code:'030d8',tip:'1 coretan. SAMA PERSIS dengan へ hiragana! Segitiga/sudut.'},
+  {k:'ホ',r:'ho',code:'030db',tip:'4 coretan. Seperti tanda + dengan tambahan dua diagonal.'},
+  {k:'マ',r:'ma',code:'030de',tip:'3 coretan. Garis horizontal, lalu dua diagonal.'},
+  {k:'ミ',r:'mi',code:'030df',tip:'3 coretan. Tiga garis horizontal dengan panjang berbeda.'},
+  {k:'ム',r:'mu',code:'030e0',tip:'2 coretan. Lengkung kecil kiri atas, lalu diagonal besar ke kanan.'},
+  {k:'メ',r:'me',code:'030e1',tip:'2 coretan. Dua diagonal bersilang seperti X.'},
+  {k:'モ',r:'mo',code:'030e2',tip:'3 coretan. Tiga garis horizontal — seperti E terbalik.'},
+  {k:'ヤ',r:'ya',code:'030e4',tip:'3 coretan. Diagonal kanan, diagonal kiri, lalu vertikal bawah.'},
+  {k:'ユ',r:'yu',code:'030e6',tip:'3 coretan. Horizontal kanan atas, vertikal, horizontal bawah panjang.'},
+  {k:'ヨ',r:'yo',code:'030e8',tip:'3 coretan. Tiga garis horizontal dihubungkan vertikal di kanan.'},
+  {k:'ラ',r:'ra',code:'030e9',tip:'2 coretan. Garis horizontal atas, lalu diagonal melengkung besar.'},
+  {k:'リ',r:'ri',code:'030ea',tip:'2 coretan. Dua garis vertikal — kiri ada kait, kanan lurus.'},
+  {k:'ル',r:'ru',code:'030eb',tip:'2 coretan. Diagonal kiri, lalu lengkung kanan dengan kait bawah.'},
+  {k:'レ',r:'re',code:'030ec',tip:'1 coretan. Satu coretan vertikal dengan kait ke kanan di bawah.'},
+  {k:'ロ',r:'ro',code:'030ed',tip:'3 coretan. Kotak terbuka — atas+kanan, kiri, bawah.'},
+  {k:'ワ',r:'wa',code:'030ef',tip:'2 coretan. Garis horizontal atas, lalu vertikal melengkung.'},
+  {k:'ヲ',r:'wo',code:'030f2',tip:'3 coretan. Garis horizontal atas, diagonal kiri, lalu vertikal.'},
+  {k:'ン',r:'n',code:'030f3',tip:'2 coretan. INGAT: ン (n) miring kiri. Beda dari ソ (so) yang miring kanan!'},
+];
+
+// ===== STATE =====
+let currentScript = 'hira';
+let animTimer = null;
+let practiceCanvas = null, practiceCtx = null;
+let isDrawing = false;
+let svgCache = {};
+
+// ===== INIT =====
+function buildCharGrid(data, containerId, script) {
+  const rows = {
+    'ア行/あ行': data.slice(0,5),
+    'カ行/か行': data.slice(5,10),
+    'サ行/さ行': data.slice(10,15),
+    'タ行/た行': data.slice(15,20),
+    'ナ行/な行': data.slice(20,25),
+    'ハ行/は行': data.slice(25,30),
+    'マ行/ま行': data.slice(30,35),
+    'ヤ行/や行': data.slice(35,38),
+    'ラ行/ら行': data.slice(38,43),
+    'ワ行/わ行+ん': data.slice(43,46),
+  };
+  const names = Object.keys(rows);
+  const container = document.getElementById(containerId);
+  let html = '';
+  names.forEach(name => {
+    const group = rows[name];
+    const label = name.split('/')[script==='hira'?1:0];
+    html += `<div class="row-label">${label}</div><div class="char-grid">`;
+    group.forEach((item,i) => {
+      html += `<div class="char-cell" id="${script}-cell-${item.code}" onclick="loadChar('${script}','${item.code}')">
+        <span class="cc">${item.k}</span><span class="cr">${item.r}</span></div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ===== LOAD CHARACTER =====
+async function loadChar(script, code) {
+  // Update active cell
+  document.querySelectorAll(`#${script}-char-grid .char-cell`).forEach(c=>c.classList.remove('active'));
+  const cell = document.getElementById(`${script}-cell-${code}`);
+  if(cell) cell.classList.add('active');
+
+  const data = script==='hira'?hiragana:katakana;
+  const item = data.find(x=>x.code===code);
+  const viewer = document.getElementById(`${script}-viewer`);
+  viewer.innerHTML = `<div class="loading">Memuat stroke order…</div>`;
+
+  try {
+    let svgText;
+    if(svgCache[code]) {
+      svgText = svgCache[code];
+    } else {
+      const res = await fetch(`https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji/${code}.svg`);
+      if(!res.ok) throw new Error('not found');
+      svgText = await res.text();
+      svgCache[code] = svgText;
+    }
+    renderViewer(script, item, svgText, viewer);
+  } catch(e) {
+    viewer.innerHTML = `<div class="error">Gagal memuat data. Cek koneksi internet.</div>`;
+  }
+}
+
+function renderViewer(script, item, svgText, viewer) {
+  if(animTimer) clearTimeout(animTimer);
+
+  // Parse SVG paths
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(svgText, 'image/svg+xml');
+  const paths = Array.from(doc.querySelectorAll('path'));
+
+  viewer.innerHTML = `
+    <div class="viewer-top">
+      <div class="viewer-char-big">${item.k}</div>
+      <div class="viewer-info">
+        <div class="viewer-romaji">${item.r.toUpperCase()}</div>
+        <div class="viewer-strokes">${paths.length} coretan (stroke)</div>
+        <div class="viewer-tip">${item.tip}</div>
+      </div>
+    </div>
+
+    <div class="svg-area" id="svg-area">
+      <svg viewBox="0 0 109 109" xmlns="http://www.w3.org/2000/svg" id="stroke-svg">
+        <!-- Guide lines -->
+        <line x1="54.5" y1="0" x2="54.5" y2="109" class="guide-line"/>
+        <line x1="0" y1="54.5" x2="109" y2="54.5" class="guide-line"/>
+        <line x1="27" y1="0" x2="27" y2="109" stroke="#f0f4f8" stroke-width="0.5"/>
+        <line x1="82" y1="0" x2="82" y2="109" stroke="#f0f4f8" stroke-width="0.5"/>
+        <line x1="0" y1="27" x2="109" y2="27" stroke="#f0f4f8" stroke-width="0.5"/>
+        <line x1="0" y1="82" x2="109" y2="82" stroke="#f0f4f8" stroke-width="0.5"/>
+        <!-- Ghost (full character, faint) -->
+        <g opacity="0.06">
+          ${paths.map(p=>`<path d="${p.getAttribute('d')}" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
+        </g>
+        <!-- Animated strokes -->
+        ${paths.map((p,i)=>`<path id="sp-${i}" d="${p.getAttribute('d')}" class="stroke-path" stroke="#1a1a2e"/>`).join('')}
+        <!-- Stroke numbers -->
+        <g id="stroke-nums"></g>
+      </svg>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" onclick="playAll()">▶ Animasi Semua</button>
+      <button class="btn btn-secondary" id="btn-prev" onclick="stepStroke(-1)" disabled>← Mundur</button>
+      <button class="btn btn-secondary" id="btn-next" onclick="stepStroke(1)">Maju →</button>
+      <button class="btn btn-danger" onclick="resetStrokes()">↺ Reset</button>
+      <span class="stroke-counter" id="stroke-counter">0 / ${paths.length}</span>
+      <div class="speed-row">
+        <span>Cepat:</span>
+        <input type="range" id="speed-range" min="200" max="1500" value="700" step="100">
+      </div>
+    </div>
+
+    <div class="stroke-list" id="stroke-list">
+      ${paths.map((p,i)=>`
+        <div class="stroke-thumb" id="thumb-${i}" onclick="goToStroke(${i+1})">
+          <svg viewBox="0 0 109 109"><path d="${p.getAttribute('d')}" fill="none" stroke="#0f3460" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="stroke-n">${i+1}</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="practice-section">
+      <h4>✍️ Latihan Menulis</h4>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+        <div>
+          <div style="font-size:.72rem;color:#aaa;margin-bottom:4px">Contoh</div>
+          <div style="font-size:4rem;width:100px;height:100px;border:2px dashed #cdd8e8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#dde3ea;position:relative">
+            <span style="position:absolute;font-size:5rem;color:#e8eef5;line-height:1">${item.k}</span>
+            <svg viewBox="0 0 109 109" style="width:80px;height:80px;position:relative;z-index:1">
+              ${paths.map(p=>`<path d="${p.getAttribute('d')}" fill="none" stroke="#0f3460" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:#aaa;margin-bottom:4px">Tulis di sini (5 kotak)</div>
+          <div style="display:flex;gap:4px">
+            ${[0,1,2,3,4].map(i=>`
+              <div style="position:relative;width:100px;height:100px;border:2px dashed #cdd8e8;border-radius:8px;overflow:hidden">
+                <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5rem;color:#f0f4f8;line-height:1;pointer-events:none">${item.k}</span>
+                <div style="position:absolute;top:50%;left:0;width:100%;height:1px;background:#e8eef5"></div>
+                <div style="position:absolute;left:50%;top:0;width:1px;height:100%;background:#e8eef5"></div>
+                <canvas width="100" height="100" class="practice-canvas" style="position:relative;z-index:1;cursor:crosshair"></canvas>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="practice-btns">
+        <button class="btn btn-danger" onclick="clearAll()">↺ Hapus Semua</button>
+      </div>
+    </div>
+  `;
+
+  // Setup practice canvases
+  document.querySelectorAll('.practice-canvas').forEach(c=>setupCanvas(c));
+
+  // Init stroke state
+  window._strokes = paths;
+  window._currentStroke = 0;
+  updateStrokeUI();
+}
+
+// ===== STROKE ANIMATION =====
+let _currentStroke = 0;
+
+function getSpeed() {
+  const r = document.getElementById('speed-range');
+  return r ? parseInt(r.value) : 700;
+}
+
+function animatePath(pathEl, duration, cb) {
+  pathEl.classList.add('shown');
+  const len = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = len;
+  pathEl.style.strokeDashoffset = len;
+  pathEl.style.transition = `stroke-dashoffset ${duration}ms ease`;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      pathEl.style.strokeDashoffset = 0;
+      setTimeout(()=>{ pathEl.style.strokeDasharray = ''; pathEl.style.strokeDashoffset = ''; if(cb)cb(); }, duration+50);
+    });
+  });
+}
+
+function addStrokeNum(pathEl, num) {
+  const svg = document.getElementById('stroke-svg');
+  const numGroup = document.getElementById('stroke-nums');
+  if(!svg||!numGroup) return;
+  try {
+    const pt = pathEl.getPointAtLength(0);
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+    dot.setAttribute('r', 4); dot.setAttribute('class', 'stroke-dot');
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x', pt.x+5); txt.setAttribute('y', pt.y-5);
+    txt.setAttribute('class','stroke-num'); txt.textContent = num;
+    numGroup.appendChild(dot); numGroup.appendChild(txt);
+  } catch(e){}
+}
+
+function updateStrokeUI() {
+  const strokes = window._strokes||[];
+  const cur = window._currentStroke||0;
+  const counter = document.getElementById('stroke-counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  if(counter) counter.textContent = `${cur} / ${strokes.length}`;
+  if(btnPrev) btnPrev.disabled = cur === 0;
+  if(btnNext) btnNext.disabled = cur >= strokes.length;
+
+  // Highlight active thumb
+  document.querySelectorAll('.stroke-thumb').forEach((t,i)=>{
+    t.classList.toggle('active', i === cur-1);
+  });
+}
+
+function resetStrokes() {
+  if(animTimer) clearTimeout(animTimer);
+  window._currentStroke = 0;
+  const strokes = window._strokes||[];
+  strokes.forEach((p,i)=>{
+    const el = document.getElementById(`sp-${i}`);
+    if(el){ el.classList.remove('shown'); el.style.strokeDasharray=''; el.style.strokeDashoffset=''; el.style.transition=''; }
+  });
+  const numGroup = document.getElementById('stroke-nums');
+  if(numGroup) numGroup.innerHTML='';
+  updateStrokeUI();
+}
+
+function stepStroke(dir) {
+  if(animTimer) clearTimeout(animTimer);
+  const strokes = window._strokes||[];
+  const cur = window._currentStroke||0;
+  const next = cur + dir;
+  if(next < 0 || next > strokes.length) return;
+
+  if(dir > 0 && next <= strokes.length) {
+    const el = document.getElementById(`sp-${next-1}`);
+    if(el) animatePath(el, getSpeed(), ()=>{});
+    addStrokeNum(el, next);
+    window._currentStroke = next;
+  } else if(dir < 0) {
+    // Reset and replay up to next
+    resetStrokes();
+    window._currentStroke = 0;
+    if(next > 0) playUpTo(next);
+    return;
+  }
+  updateStrokeUI();
+}
+
+function playUpTo(n) {
+  const strokes = window._strokes||[];
+  let i = 0;
+  function step() {
+    if(i >= n) { updateStrokeUI(); return; }
+    const el = document.getElementById(`sp-${i}`);
+    if(el) { el.classList.add('shown'); el.style.strokeDasharray=''; el.style.strokeDashoffset=''; }
+    addStrokeNum(el, i+1);
+    window._currentStroke = i+1;
+    i++;
+    step();
+  }
+  step();
+}
+
+function goToStroke(n) {
+  if(animTimer) clearTimeout(animTimer);
+  resetStrokes();
+  window._currentStroke = 0;
+  if(n > 0) playUpTo(n);
+  updateStrokeUI();
+}
+
+function playAll() {
+  if(animTimer) clearTimeout(animTimer);
+  resetStrokes();
+  window._currentStroke = 0;
+  const strokes = window._strokes||[];
+  let i = 0;
+  function next() {
+    if(i >= strokes.length) { updateStrokeUI(); return; }
+    const el = document.getElementById(`sp-${i}`);
+    if(el) animatePath(el, getSpeed(), ()=>{
+      addStrokeNum(el, i+1);
+      window._currentStroke = i+1;
+      updateStrokeUI();
+      i++;
+      animTimer = setTimeout(next, 200);
+    });
+    else { i++; next(); }
+  }
+  next();
+}
+
+// ===== PRACTICE CANVAS =====
+function setupCanvas(canvas) {
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#0f3460';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false, lastX=0, lastY=0;
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX-r.left)*(canvas.width/r.width), y: (src.clientY-r.top)*(canvas.height/r.height) };
+  }
+  canvas.addEventListener('mousedown', e=>{ drawing=true; const p=getPos(e); lastX=p.x; lastY=p.y; ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+  canvas.addEventListener('mousemove', e=>{ if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); lastX=p.x; lastY=p.y; });
+  canvas.addEventListener('mouseup', ()=>drawing=false);
+  canvas.addEventListener('mouseleave', ()=>drawing=false);
+  canvas.addEventListener('touchstart', e=>{ e.preventDefault(); drawing=true; const p=getPos(e); lastX=p.x; lastY=p.y; ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+  canvas.addEventListener('touchmove', e=>{ e.preventDefault(); if(!drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); }, {passive:false});
+  canvas.addEventListener('touchend', ()=>drawing=false);
+}
+
+function clearAll() {
+  document.querySelectorAll('.practice-canvas').forEach(c=>{
+    const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);
+  });
+}
+
+// ===== SCRIPT SWITCH =====
+function switchScript(script, tabEl) {
+  currentScript = script;
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`tab-${script}`).classList.remove('hidden');
+  tabEl.classList.add('active');
+}
+
+function showTab(name) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.remove('hidden');
+  event.target.classList.add('active');
+}
+
+// ===== PRINT GRIDS =====
+function buildPrintGrid(data, containerId) {
+  const container = document.getElementById(containerId);
+  let html = '';
+  data.forEach(item => {
+    html += `<div style="margin-bottom:14px">
+      <div style="font-size:.75rem;font-weight:700;color:#444;margin-bottom:4px">${item.k} (${item.r})</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">`;
+    // First box: reference
+    html += `<div class="genko-box"><span class="genko-ref">${item.k}</span></div>`;
+    // 7 practice boxes
+    for(let i=0;i<7;i++) html += `<div class="genko-box"></div>`;
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+// ===== START =====
+buildCharGrid(hiragana, 'hira-char-grid', 'hira');
+buildCharGrid(katakana, 'kata-char-grid', 'kata');
+buildPrintGrid(hiragana, 'print-hira');
+buildPrintGrid(katakana, 'print-kata');
+</script>
+</body>
+</html>
